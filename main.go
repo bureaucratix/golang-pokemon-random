@@ -27,26 +27,35 @@ func errorCheck(err error) {
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	n1 := rand.Intn(806) + 1
-	resp, apiErr := http.Get(fmt.Sprintf("https://pokeapi.co/api/v2/pokemon/%d", n1))
-	errorCheck(apiErr)
+	n2 := rand.Intn(806) + 1
+	n3 := rand.Intn(806) + 1
+	n4 := rand.Intn(806) + 1
+	n5 := rand.Intn(806) + 1
+	n6 := rand.Intn(806) + 1
 
-	defer resp.Body.Close()
-
-	body, bodyErr := ioutil.ReadAll(resp.Body)
-	errorCheck(bodyErr)
-
-	p := pokemon{}
-	jsonErr := json.Unmarshal(body, &p)
-	errorCheck(jsonErr)
+	dexNums := []int{n1, n2, n3, n4, n5, n6}
 
 	f, fileErr := os.Create("pokemon.txt")
 	errorCheck(fileErr)
 
-	_, writeErr := f.WriteString(p.Name)
-	errorCheck(writeErr)
+	for _, num := range dexNums {
+		resp, apiErr := http.Get(fmt.Sprintf("https://pokeapi.co/api/v2/pokemon/%d", num))
+		errorCheck(apiErr)
+
+		body, bodyErr := ioutil.ReadAll(resp.Body)
+		errorCheck(bodyErr)
+		defer resp.Body.Close()
+
+		p := pokemon{}
+		jsonErr := json.Unmarshal(body, &p)
+		errorCheck(jsonErr)
+		fmt.Println(p.Name)
+
+		_, writeErr := f.WriteString(fmt.Sprintf("%s\n", p.Name))
+		errorCheck(writeErr)
+	}
 
 	closeErr := f.Close()
 	errorCheck(closeErr)
 
-	fmt.Println(p.Name)
 }
