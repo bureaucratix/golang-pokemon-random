@@ -42,8 +42,11 @@ func main() {
 	f, fileErr := os.Create("pokemon.txt")
 	errorCheck(fileErr)
 
-	f.WriteString(p.Name)
-	f.Close()
+	_, writeErr := f.WriteString(p.Name)
+	errorCheck(writeErr)
+
+	closeErr := f.Close()
+	errorCheck(closeErr)
 
 	fmt.Println(p.Name)
 }
